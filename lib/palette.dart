@@ -8,7 +8,7 @@ class Palette {
   static Color leftWidgetsBackground = const Color(0xff242a32);
   static Color clockWidgetBackground = const Color(0xffffee99);
   static Color batteryWidgetBackground = const Color(0xffbae67e);
-  static Color batteryWidgetCriticalBackground = const Color(0xfff34a4a);
+  static Color batteryWidgetCriticalForeground = const Color(0xfff34a4a);
   static Color networkWidgetBackground = const Color(0xffd4bfff);
   static Color audioWidgetBackground = const Color(0xff83CEC6);
 }
