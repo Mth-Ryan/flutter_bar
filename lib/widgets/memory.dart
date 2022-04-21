@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,36 +11,85 @@ class MemoryWidget extends StatefulWidget {
   const MemoryWidget({Key? key}) : super(key: key);
 
   final icon = Icons.memory;
-  final double totalMemory = 8.58993459e9;
 
   @override
   State<MemoryWidget> createState() => _MemoryWidgetState();
 }
 
 class _MemoryWidgetState extends State<MemoryWidget> {
-  final _unities = {"MB": pow(1024, 2), "GB": pow(1024, 3)};
-  final _currentUnity = "MB";
+  final _streamController = StreamController<int>();
 
-  double _freeMemory = 0.0;
+  int _meminfoStart = 0; // meminfo data column start
+  int _meminfoEnd = 0; // meminfo data column end
 
-  double _convert(double memory) {
-    return memory / _unities[_currentUnity]!;
+  @override
+  void initState() {
+    super.initState();
+
+    File f = File("/proc/meminfo");
+    String firstLine = f.readAsLinesSync()[0];
+    for (var rune in firstLine.runes) {
+      if (rune > 47 && rune < 58) {
+        _meminfoEnd++;
+      } else {
+        _meminfoStart++;
+      }
+    }
+    _meminfoStart -= " kB".length;
+    _meminfoEnd += _meminfoStart + 1;
+
+    _loadMemoryData();
+  }
+
+  void _loadMemoryData() async {
+    final f = File("/proc/meminfo");
+    List<String> lines = [];
+    int usedMemory = 0;
+
+    Timer.periodic(const Duration(seconds: 1), (timer) async {
+      Stream<String> linesStream = f
+          .openRead()
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .take(5);
+      await for (final line in linesStream) {
+        lines.add(line);
+      }
+
+      List<int> values = lines.map((line) {
+        return int.parse(line.substring(_meminfoStart, _meminfoEnd));
+      }).toList();
+
+      //            total        free        buffers     cached
+      usedMemory = values[0] - (values[1] + values[3] + values[4]);
+      _streamController.add(usedMemory);
+
+      lines = [];
+    });
+  }
+
+  // Convert kB to GB
+  double _convert(int memory) {
+    return memory / pow(1024, 2);
   }
 
   @override
   Widget build(BuildContext context) {
-    final double _usedMemory = _convert(widget.totalMemory - _freeMemory);
     return BaseButtonWidget(
         backgroundColor: Palette.leftWidgetsBackground,
-        onPressed: () {
-          // Todo Change unity
-          setState(() {
-            _freeMemory += pow(1024.0, 2);
-          });
-        },
-        child: BaseContentWidget(
-            color: Palette.foreground,
-            icon: widget.icon,
-            text: "${_usedMemory.toStringAsFixed(2)} $_currentUnity"));
+        onPressed: () {},
+        child: StreamBuilder(
+            stream: _streamController.stream,
+            builder: (context, AsyncSnapshot<int?> snapshot) {
+              if (snapshot.hasData) {
+                double usedMemory = _convert(snapshot.data!);
+                return BaseContentWidget(
+                    icon: widget.icon,
+                    text: "${usedMemory.toStringAsFixed(2)} GB",
+                    color: Palette.foreground);
+              } else {
+                return const Text("Error");
+              }
+            }));
   }
 }
