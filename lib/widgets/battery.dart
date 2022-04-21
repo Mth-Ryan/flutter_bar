@@ -52,6 +52,8 @@ class _BatteryWidgetState extends State<BatteryWidget> {
           });
         },
         child: BaseContentWidget(
-            color: Palette.background, icon: _getIcon(), text: "$_level%"));
+            color: Palette.rightForeground,
+            icon: _getIcon(),
+            text: "$_level%"));
   }
 }

@@ -40,12 +40,12 @@ class _AudioWidgetState extends State<AudioWidget> {
         return BaseContentWidget(
             icon: _getVolumeIcon(),
             text: "$_volume%",
-            color: Palette.background);
+            color: Palette.rightForeground);
       case _WidgetState.playingNow:
         return BaseContentWidget(
             icon: widget.PlayIcon,
             text: _playingNow,
-            color: Palette.background);
+            color: Palette.rightForeground);
     }
   }
 

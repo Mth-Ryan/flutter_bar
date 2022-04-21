@@ -86,7 +86,7 @@ class _MemoryWidgetState extends State<MemoryWidget> {
                 return BaseContentWidget(
                     icon: widget.icon,
                     text: "${usedMemory.toStringAsFixed(2)} GB",
-                    color: Palette.foreground);
+                    color: Palette.leftForeground);
               } else {
                 return const Text("Error");
               }

@@ -71,7 +71,7 @@ class _ClockWidgetState extends State<ClockWidget> {
                 return BaseContentWidget(
                     icon: widget.icon,
                     text: _formatDate(date),
-                    color: Palette.background);
+                    color: Palette.rightForeground);
               } else {
                 return const Text("Error");
               }

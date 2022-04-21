@@ -91,7 +91,7 @@ class _CpuWidgetState extends State<CpuWidget> {
                 return BaseContentWidget(
                     icon: widget.icon,
                     text: "$_vendor: ${percent.toStringAsFixed(2)}%",
-                    color: Palette.foreground);
+                    color: Palette.leftForeground);
               } else {
                 return const Text("Error");
               }

@@ -36,7 +36,7 @@ class _NetworkWidgetState extends State<NetworkWidget> {
         backgroundColor: Palette.networkWidgetBackground,
         onPressed: () {},
         child: BaseContentWidget(
-            color: Palette.background,
+            color: Palette.rightForeground,
             icon: widget.icons[_status]!,
             text: _getStatusContent()));
   }

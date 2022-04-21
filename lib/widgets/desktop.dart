@@ -31,7 +31,7 @@ class _DesktopWidgetState extends State<DesktopWidget> {
         backgroundColor: Palette.leftWidgetsBackground,
         onPressed: _changeIndex,
         child: BaseContentWidget(
-            color: Palette.foreground,
+            color: Palette.leftForeground,
             icon: widget.icon,
             text: widget.dektopList[_desktopIndex]));
   }
