@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bar/palette.dart';
 import 'package:flutter_bar/widgets/base.dart';
@@ -14,8 +16,22 @@ class ClockWidget extends StatefulWidget {
 }
 
 class _ClockWidgetState extends State<ClockWidget> {
-  DateTime _date = DateTime.now();
-  _ClockFormat _format = _ClockFormat.hour;
+  final _streamControler = StreamController<DateTime>();
+  late _ClockFormat _format;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _format = _ClockFormat.hour;
+    _loadDate();
+  }
+
+  void _loadDate() async {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      _streamControler.add(DateTime.now());
+    });
+  }
 
   void _changeFormat() {
     setState(() {
@@ -25,7 +41,7 @@ class _ClockWidgetState extends State<ClockWidget> {
     });
   }
 
-  String _getDate() {
+  String _formatDate(DateTime date) {
     String format(int num) {
       String str = num.toString();
       if (str.length == 1) {
@@ -34,31 +50,31 @@ class _ClockWidgetState extends State<ClockWidget> {
       return str;
     }
 
-    String hour = "${format(_date.hour)}:${format(_date.minute)}";
+    String hour = "${format(date.hour)}:${format(date.minute)}";
     if (_format == _ClockFormat.hour) {
       return hour;
     } else {
-      return "${format(_date.month)}/${format(_date.day)}/${_date.year}, " +
-          hour;
-    }
-  }
-
-  void _updateTime() async {
-    while (true) {
-      setState(() {
-        _date = DateTime.now();
-      });
-      await Future.delayed(const Duration(seconds: 1));
+      return "${format(date.month)}/${format(date.day)}/${date.year}, " + hour;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _updateTime();
     return BaseButtonWidget(
         backgroundColor: Palette.clockWidgetBackground,
         onPressed: _changeFormat,
-        child: BaseContentWidget(
-            color: Palette.background, icon: widget.icon, text: _getDate()));
+        child: StreamBuilder(
+            stream: _streamControler.stream,
+            builder: (context, AsyncSnapshot<DateTime?> snapshot) {
+              if (snapshot.hasData) {
+                DateTime date = snapshot.data!;
+                return BaseContentWidget(
+                    icon: widget.icon,
+                    text: _formatDate(date),
+                    color: Palette.background);
+              } else {
+                return const Text("Error");
+              }
+            }));
   }
 }
