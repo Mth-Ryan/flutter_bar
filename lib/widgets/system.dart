@@ -34,7 +34,7 @@ class _SystemWidgetState extends State<SystemWidget> {
   @override
   Widget build(BuildContext context) {
     return BaseButtonWidget(
-        backgroundColor: Palette.systemBackground,
+        backgroundColor: Palette.systemWidgetBackground,
         onPressed: () {},
         child: BaseContentWidget(
             color: Palette.leftForeground, icon: _icon, text: _distro));
